@@ -1,4 +1,39 @@
-<form #userForm="ngForm" (ngSubmit)="onSubmit()">
+<form (ngSubmit)="onSubmit()" [formGroup]="userForm">
+  <div class="mb-3">
+    <label class="form-label" for="name">Имя:</label>
+    <input class="form-control" type="text" id="name" formControlName="name">
+    <div class="alert alert-danger"
+    *ngIf="userForm.get('name')?.hasError('required')
+    && (userForm.get('name')?.touched || userForm.get('name')?.dirty)">
+      Обязательное поле.
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label" for="password">Пароль:</label>
+    <input class="form-control" type="text" id="password" formControlName="password">
+    <div class="alert alert-danger"
+    *ngIf="userForm.get('password')?.hasError('required')
+    && (userForm.get('password')?.touched || userForm.get('password')?.dirty)">
+      Обязательное поле.
+    </div>
+    <div class="alert alert-danger"
+    *ngIf="userForm.get('password')?.hasError('minlength')
+    && (userForm.get('password')?.touched || userForm.get('password')?.dirty)">
+      Требуется минимум 7 символов.
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <button class="btn btn-info" [disabled]="userForm.invalid" type="submit">Сохранить</button>
+  </div>
+
+</form>
+
+
+
+
+<!-- <form #userForm="ngForm" (ngSubmit)="onSubmit()">
   <div class="mb-3">
     <label class="form-label" for="name">Имя:</label>
     <input #name="ngModel" [(ngModel)]="model.name" class="form-control" type="text" id="name"
@@ -26,4 +61,4 @@
 
 </form>
 
-<p>{{model | json}}</p>
+<p>{{model | json}}</p> -->
