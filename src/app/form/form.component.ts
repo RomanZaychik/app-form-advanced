@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { emailValidator, rangeValidator } from '../shared/custom-validators';
+import { FORM_ERRORS, FORM_LABELS, FORM_PLACEHOLDERS, FORM_ROLES, FORM_SUCCESS, FORM_VALIDATION_MESSAGES } from '../shared/form-data';
 import { User } from '../shared/user';
 
 
@@ -11,67 +12,24 @@ import { User } from '../shared/user';
 })
 export class FormComponent implements OnInit {
 
+  formLabels = FORM_LABELS;
+  formPlaceholders = FORM_PLACEHOLDERS;
+  formSuccess = FORM_SUCCESS;
+  formErrors: any = FORM_ERRORS;
+  validationMessages: any = FORM_VALIDATION_MESSAGES;
+  roles = FORM_ROLES;
+
   userForm!: FormGroup;
-  roles: string[] = ['Гость', 'Модератор', 'Администратор'];
-  user: User = new User(1, null, null, null, null, null);
 
-  formLabels = {
-    name: 'Логин',
-    password: 'Пароль',
-    email: 'Email',
-    age: 'Возраст',
-    role: 'Роль'
-  }
+  name!: AbstractControl
+  password!: AbstractControl
+  email!: AbstractControl
+  age!: AbstractControl
+  role!: AbstractControl
 
-  formPlaceholders = {
-    name: 'Введите логин...',
-    password: 'Введите пароль...',
-    email: 'Укажите адрес еmail...',
-    age: 'Установите возраст...',
-    role: 'Выберите роль из списка...'
-  }
+  private user: User = new User(1, null, null, null, null, null);
 
-  formSuccess = {
-    name: 'Принято!',
-    password: 'Принято!',
-    email: 'Принято!',
-    age: 'Принято!',
-    role: 'Принято!'
-  }
-
-  formErrors: any = {
-    name: '',
-    password: '',
-    email: '',
-    age: '',
-    role: ''
-  }
-
-  validationMessages: any = {
-    name: {
-      required: 'Имя обязательно.',
-      minlength: 'Имя должно содержать не менее 4 символов.',
-      maxlength: 'Имя должно содержать не более 15 символов.'
-    },
-    password: {
-      required: 'Пароль обязателен.',
-      minlength: 'Пароль должен содержать не менее 7 символов.',
-      maxlength: 'Пароль должен содержать не более 25 символов.'
-    },
-    email: {
-      required: 'email обязателен.',
-      emailValidator: 'Неправильный формат email адреса.'
-    },
-    age: {
-     required: 'Возраст обязателен.',
-     rangeValidator: 'Значение должно быть числом в диапазоне 1..122.',
-     minRange: 'Значение должно быть больше 1.',
-     maxRange: 'Значение должно быть меньше 122.'
-    },
-    role: {
-     required: 'Обязательное поле.'
-    }
-  }
+  
   
   constructor(private formBuilder: FormBuilder) { }
 
@@ -94,9 +52,18 @@ export class FormComponent implements OnInit {
     })
 
      this.userForm.valueChanges.subscribe(() => this.onValueChanged());
+     this.createControls()
   }
 
-   onValueChanged(): void {
+  private createControls(): void {
+    this.name = this.userForm.controls.name,
+    this.password = this.userForm.controls.password,
+    this.email = this.userForm.controls.email,
+    this.age = this.userForm.controls.age,
+    this.role = this.userForm.controls.role
+  }
+
+  onValueChanged(): void {
          const form = this.userForm;
     
          Object.keys(this.formErrors).forEach(field => {
