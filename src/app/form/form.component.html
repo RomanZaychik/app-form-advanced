@@ -1,28 +1,57 @@
 <form (ngSubmit)="onSubmit()" [formGroup]="userForm">
   <div class="mb-3">
-    <label class="form-label" for="name">Имя:</label>
-    <input class="form-control" type="text" id="name" formControlName="name">
-    <div class="alert alert-danger"
-    *ngIf="userForm.get('name')?.hasError('required')
-    && (userForm.get('name')?.touched || userForm.get('name')?.dirty)">
-      Обязательное поле.
-    </div>
+    <label class="form-label" for="name">{{formLabels.name}}<span class="text-danger">*</span></label>
+    <input class="form-control" type="text" id="name" formControlName="name" placeholder="{{formPlaceholders.name}}"
+    [ngClass]="{'is-valid': userForm.controls.name.valid,
+                'is-invalid': userForm.controls.name.invalid && userForm.controls.name.touched}"
+                (blur)="onValueChanged()">
+    <div *ngIf="userForm.controls.name.valid" class="valid-feedback">{{formSuccess.name}}</div>
+    <div *ngIf="userForm.controls.name.invalid && userForm.controls.name.touched" class="invalid-feedback">{{formErrors.name}}</div>
   </div>
 
   <div class="mb-3">
-    <label class="form-label" for="password">Пароль:</label>
-    <input class="form-control" type="text" id="password" formControlName="password">
-    <div class="alert alert-danger"
-    *ngIf="userForm.get('password')?.hasError('required')
-    && (userForm.get('password')?.touched || userForm.get('password')?.dirty)">
-      Обязательное поле.
-    </div>
-    <div class="alert alert-danger"
-    *ngIf="userForm.get('password')?.hasError('minlength')
-    && (userForm.get('password')?.touched || userForm.get('password')?.dirty)">
-      Требуется минимум 7 символов.
-    </div>
+    <label class="form-label" for="password">{{formLabels.password}}<span class="text-danger">*</span></label>
+    <input class="form-control" type="password" id="password" formControlName="password" placeholder="{{formPlaceholders.password}}"
+    [ngClass]="{'is-valid': userForm.controls.password.valid,
+                'is-invalid': userForm.controls.password.invalid && userForm.controls.password.touched}"
+                 (blur)="onValueChanged()">
+<div *ngIf="userForm.controls.password.valid" class="valid-feedback">{{formSuccess.password}}</div>
+<div *ngIf="userForm.controls.password.invalid && userForm.controls.password.touched" class="invalid-feedback">{{formErrors.password}}</div>
   </div>
+
+  <div class="mb-3">
+    <label class="form-label" for="email">{{formLabels.email}}<span class="text-danger">*</span></label>
+    <input class="form-control" type="email" id="email" formControlName="email" placeholder="{{formPlaceholders.email}}"
+    [ngClass]="{'is-valid': userForm.controls.email.valid,
+                'is-invalid': userForm.controls.email.invalid && userForm.controls.email.touched}"
+                (blur)="onValueChanged()">
+    <div *ngIf="userForm.controls.email.valid" class="valid-feedback">{{formSuccess.email}}</div>
+    <div *ngIf="userForm.controls.email.invalid && userForm.controls.email.touched" class="invalid-feedback">{{formErrors.email}}</div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label" for="age">{{formLabels.age}}<span class="text-danger">*</span></label>
+    <input class="form-control" type="text" id="age" formControlName="age" placeholder="{{formPlaceholders.age}}"
+    [ngClass]="{'is-valid': userForm.controls.age.valid,
+                'is-invalid': userForm.controls.age.invalid && userForm.controls.age.touched}"
+                (blur)="onValueChanged()">
+    <div *ngIf="userForm.controls.age.valid" class="valid-feedback">{{formSuccess.age}}</div>
+    <div *ngIf="userForm.controls.age.invalid && userForm.controls.age.touched" class="invalid-feedback">{{formErrors.age}}</div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label" for="role">{{formLabels.role}}<span class="text-danger">*</span></label>
+    <select class="form-select" id="role" formControlName="role"
+    [ngClass]="{'is-valid': userForm.controls.role.valid,
+                'is-invalid': userForm.controls.role.invalid && userForm.controls.role.touched}"
+                (blur)="onValueChanged()">
+           <option disabled selected [value]="null">{{formPlaceholders.role}}</option>
+           <option *ngFor="let role of roles" [value]="role">{{role}}</option>
+     </select>
+    <div *ngIf="userForm.controls.role.valid" class="valid-feedback">{{formSuccess.role}}</div>
+    <div *ngIf="userForm.controls.role.invalid && userForm.controls.role.touched" class="invalid-feedback">{{formErrors.role}}</div>
+  </div>
+
 
   <div class="mb-3">
     <button class="btn btn-info" [disabled]="userForm.invalid" type="submit">Сохранить</button>
@@ -33,32 +62,3 @@
 
 
 
-<!-- <form #userForm="ngForm" (ngSubmit)="onSubmit()">
-  <div class="mb-3">
-    <label class="form-label" for="name">Имя:</label>
-    <input #name="ngModel" [(ngModel)]="model.name" class="form-control" type="text" id="name"
-      name="name" maxlength="15" minlength="4" required>
-    <div *ngIf="formErrors.name" class="alert alert-danger">{{formErrors.name}}</div>
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label" for="age">Возраст:</label>
-    <input #age="ngModel" [(ngModel)]="model.age" class="form-control" type="number" id="age" name="age" required>
-    <div *ngIf="formErrors.age" class="alert alert-danger">{{formErrors.age}}</div>
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label" for="role">Роль:</label>
-    <select [(ngModel)]="model.role" class="form-select" id="role" name="role" required>
-      <option disabled selected [value]="">Выберите роль</option>
-      <option *ngFor="let role of roles" [value]="role">{{role}}</option>
-    </select>
-  </div>
-
-  <div class="mb-3">
-    <button class="btn btn-info" [disabled]="userForm.form.invalid">Сохранить</button>
-  </div>
-
-</form>
-
-<p>{{model | json}}</p> -->

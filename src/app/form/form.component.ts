@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { emailValidator, rangeValidator } from '../shared/custom-validators';
+import { User } from '../shared/user';
 
 
 @Component({
@@ -9,14 +11,72 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class FormComponent implements OnInit {
 
-  userForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    password: new FormControl('', [Validators.required, Validators.minLength(7)])
-  })
+  userForm!: FormGroup;
+  roles: string[] = ['Гость', 'Модератор', 'Администратор'];
+  user: User = new User(1, null, null, null, null, null);
 
-  constructor() { }
+  formLabels = {
+    name: 'Логин',
+    password: 'Пароль',
+    email: 'Email',
+    age: 'Возраст',
+    role: 'Роль'
+  }
+
+  formPlaceholders = {
+    name: 'Введите логин...',
+    password: 'Введите пароль...',
+    email: 'Укажите адрес еmail...',
+    age: 'Установите возраст...',
+    role: 'Выберите роль из списка...'
+  }
+
+  formSuccess = {
+    name: 'Принято!',
+    password: 'Принято!',
+    email: 'Принято!',
+    age: 'Принято!',
+    role: 'Принято!'
+  }
+
+  formErrors: any = {
+    name: '',
+    password: '',
+    email: '',
+    age: '',
+    role: ''
+  }
+
+  validationMessages: any = {
+    name: {
+      required: 'Имя обязательно.',
+      minlength: 'Имя должно содержать не менее 4 символов.',
+      maxlength: 'Имя должно содержать не более 15 символов.'
+    },
+    password: {
+      required: 'Пароль обязателен.',
+      minlength: 'Пароль должен содержать не менее 7 символов.',
+      maxlength: 'Пароль должен содержать не более 25 символов.'
+    },
+    email: {
+      required: 'email обязателен.',
+      emailValidator: 'Неправильный формат email адреса.'
+    },
+    age: {
+     required: 'Возраст обязателен.',
+     rangeValidator: 'Значение должно быть числом в диапазоне 1..122.',
+     minRange: 'Значение должно быть больше 1.',
+     maxRange: 'Значение должно быть меньше 122.'
+    },
+    role: {
+     required: 'Обязательное поле.'
+    }
+  }
+  
+  constructor(private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
+    this.buildForm()
   }
 
   onSubmit(): void {
@@ -24,61 +84,31 @@ export class FormComponent implements OnInit {
     console.log(this.userForm.value);
   }
 
+  private buildForm() {
+    this.userForm = this.formBuilder.group({
+      name: [this.user.name, [Validators.required, Validators.minLength(4), Validators.maxLength(15)]],
+      password: [this.user.password, [Validators.required, Validators.minLength(7), Validators.maxLength(25)]],
+      email: [this.user.email, [Validators.required, emailValidator]],
+      age: [this.user.age, [Validators.required, rangeValidator(1, 122)]],
+      role: [this.user.role, [Validators.required]]
+    })
+
+     this.userForm.valueChanges.subscribe(() => this.onValueChanged());
+  }
+
+   onValueChanged(): void {
+         const form = this.userForm;
+    
+         Object.keys(this.formErrors).forEach(field => {
+           this.formErrors[field] = '';
+
+           const control = form.get(field);
+          
+           if ((control?.dirty || control?.touched) && control.invalid) {
+             const message = this.validationMessages[field];
+             Object.keys(control.errors as any).some(key => this.formErrors[field] = message[key])
+           }
+         })
 }
 
-
-// export class FormComponent implements OnInit, AfterViewInit {
-
-//   roles: string[] = ['Гость', 'Модератор', 'Администратор'];
-//   model: User = new User(1, null, null, null);
-
-//   formErrors: any = {
-//     name: '',
-//     age: ''
-//   }
-
-//   validationMessages: any = {
-//     name: {
-//       required: 'Имя обязательно',
-//       minlength: 'Имя должно содержать минимум 4 символа'
-//     },
-//     age: {
-//       required: 'Возраст обязателен'
-//     }
-//   }
-
-//   @ViewChild('userForm') userForm: NgForm | null = null;
-
-//   constructor() { }
-
-//   ngOnInit(): void {
-//   }
-  
-//   ngAfterViewInit(): void {
-//    this.userForm?.valueChanges?.subscribe(data => this.onValueChanged());
-//   }
-
-//   onSubmit(): void {
-//     console.log('Форма отправлена');
-//   }
-
-//   private onValueChanged(): void {
-//      const form: any = this.userForm?.form;
-
-//      Object.keys(this.formErrors).forEach(field => {
-//        this.formErrors[field] = '';
-//        const control = form?.get(field);
-      
-//        if (control && control.dirty && control.invalid) {
-//          const message = this.validationMessages[field];
-//          Object.keys(control.errors).forEach(key => {
-//            console.log(message[key]);
-//            this.formErrors[field] += message[key] + '';
-//          })
-//        }
-       
-//      })
-     
-//   }
-  
-// }
+}
